@@ -9,26 +9,8 @@ def main():
     companies = retrieve_input()
     data = get_price_data(companies)
     df = clean_data(data.history(period="1y"))
-
-    df["Returns"] = df["Close"].pct_change()
-    df = df.dropna()
-
-    print(df)
-    fig = go.Figure()
-
-    fig.add_trace(go.Scatter(
-        x = df.index,
-        y = df["Close"],
-        name="Price"
-    ))
-
-    fig.add_trace(go.Scatter(
-        x = df.index,
-        y = df["Returns"],
-        name="Returns"
-    ))
-    
-    fig.show()
+    df = calculate_returns(df)
+    plot_data(df)
 
 def retrieve_input():
     ticker = input()
@@ -46,7 +28,28 @@ def clean_data(data):
     clean = clean.dropna()
     return clean
 
+def calculate_returns(data):
+    new_data = data
+    new_data["Returns"] = new_data["Close"].pct_change()
+    new_data = new_data.dropna()
+    return new_data
 
+def plot_data(df):
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x = df.index,
+        y = df["Close"],
+        name="Price"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x = df.index,
+        y = df["Returns"],
+        name="Returns"
+    ))
+    
+    fig.show()
 
 if __name__ == "__main__":
     main()
